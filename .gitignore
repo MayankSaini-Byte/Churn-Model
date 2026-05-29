@@ -20,8 +20,6 @@ env/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# Model artifacts (large binary files — regenerate by running the notebook)
-models/*.pkl
 
 # IDE / OS
 .vscode/
