@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChurnSight — ML Churn Prediction Dashboard</title>
+  <title>ChurnSight — Customer Churn Prediction System</title>
   <meta name="description"
-    content="AI-powered customer churn prediction using Logistic Regression on the Telco dataset." />
+    content="Predict customer churn with machine learning. Understand why customers leave, analyze behavioral patterns, and take proactive retention actions." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,10 +17,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
-<body>
-  <header class="site-header">
+<body data-page="landing">
+
+  <!-- ═══════════════════ HEADER ═══════════════════ -->
+  <header class="site-header" id="siteHeader">
     <div class="header-inner">
-      <div class="brand">
+      <a href="/" class="brand" aria-label="ChurnSight Home">
         <div class="brand-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -28,411 +30,373 @@
         </div>
         <span class="brand-name">ChurnSight</span>
         <span class="brand-badge">ML</span>
-      </div>
-      <div class="header-meta">
-        <span class="model-chip">
-          <span class="dot dot--green"></span>
-          Logistic Regression · Active
-        </span>
-        <span class="dataset-chip">Telco Dataset</span>
-      </div>
+      </a>
+      <nav class="header-nav">
+        <a href="#what-is-churn" class="nav-link">About</a>
+        <a href="#data-used" class="nav-link">Data</a>
+        <a href="#pipeline" class="nav-link">Pipeline</a>
+        <a href="/predict" class="nav-cta">Try Predictor</a>
+      </nav>
     </div>
   </header>
 
-  <section class="stats-strip" aria-label="Model statistics">
-    <div class="stats-inner">
-      <div class="stat-card">
-        <span class="stat-value" id="stat-accuracy">~80%</span>
-        <span class="stat-label">Model Accuracy</span>
+  <!-- ═══════════════════ HERO ═══════════════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-grid" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Machine Learning · Logistic Regression
       </div>
-      <div class="stat-card">
-        <span class="stat-value">30</span>
-        <span class="stat-label">Features Used</span>
+      <h1 class="hero-title">
+        Customer Churn<br />
+        <span class="hero-title-accent">Prediction System</span>
+      </h1>
+      <p class="hero-subtitle">
+        Identify at-risk customers before they leave. Leverage behavioral data and machine learning
+        to drive proactive retention strategies and reduce revenue loss.
+      </p>
+      <div class="hero-actions">
+        <a href="/predict" class="btn-primary" id="heroCta">
+          <span class="btn-label">Try Predictor</span>
+          <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 10h12M12 5l5 5-5 5" />
+          </svg>
+        </a>
+        <a href="#what-is-churn" class="btn-secondary">
+          Learn More
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M10 4v12M5 11l5 5 5-5" />
+          </svg>
+        </a>
       </div>
-      <div class="stat-card">
-        <span class="stat-value">70K+</span>
-        <span class="stat-label">Training Records</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-value">Binary</span>
-        <span class="stat-label">Classification</span>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">79.1%</span>
+          <span class="hero-stat-label">ROC-AUC Score</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">28</span>
+          <span class="hero-stat-label">Features Analyzed</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">7K+</span>
+          <span class="hero-stat-label">Training Records</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <main class="main-layout">
-
-    <section class="panel panel--form" aria-label="Customer input form">
-      <div class="panel-header">
-        <h1 class="panel-title">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          Customer Profile
-        </h1>
-        <p class="panel-subtitle">Enter customer details to predict churn likelihood</p>
+  <!-- ═══════════════════ WHAT IS CHURN ═══════════════════ -->
+  <section class="section" id="what-is-churn">
+    <div class="section-inner">
+      <div class="section-header reveal-on-scroll">
+        <span class="section-tag">Understanding the Problem</span>
+        <h2 class="section-title">What is Customer Churn?</h2>
+        <p class="section-desc">
+          Churn occurs when customers stop doing business with a company.
+          In the telecom industry, acquiring a new customer costs <strong>5–25× more</strong>
+          than retaining an existing one — making churn prediction one of the highest-ROI
+          applications of machine learning.
+        </p>
       </div>
 
-      <form id="churnForm" class="churn-form" novalidate>
+      <div class="impact-grid">
+        <div class="impact-card reveal-on-scroll">
+          <div class="impact-icon impact-icon--cost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          </div>
+          <h3 class="impact-title">Acquisition Cost</h3>
+          <p class="impact-body">
+            New customer acquisition costs 5–25× more than retention. Predicting churn allows
+            companies to invest in keeping existing customers instead.
+          </p>
+        </div>
+        <div class="impact-card reveal-on-scroll">
+          <div class="impact-icon impact-icon--revenue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M23 6l-9.5 9.5-5-5L1 18" />
+              <path d="M17 6h6v6" />
+            </svg>
+          </div>
+          <h3 class="impact-title">Revenue Impact</h3>
+          <p class="impact-body">
+            A 5% increase in customer retention can boost profits by 25–95%.
+            Churn models help focus retention budgets where they matter most.
+          </p>
+        </div>
+        <div class="impact-card reveal-on-scroll">
+          <div class="impact-icon impact-icon--target">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+          </div>
+          <h3 class="impact-title">Targeted Action</h3>
+          <p class="impact-body">
+            Instead of blanket discounts, ML models identify specific at-risk customers —
+            enabling personalized, cost-effective retention campaigns.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <fieldset class="form-section">
-          <legend class="section-legend">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <!-- ═══════════════════ DATA USED ═══════════════════ -->
+  <section class="section section--alt" id="data-used">
+    <div class="section-inner">
+      <div class="section-header reveal-on-scroll">
+        <span class="section-tag">Model Inputs</span>
+        <h2 class="section-title">What Data Powers the Prediction?</h2>
+        <p class="section-desc">
+          The model analyzes 28 engineered features derived from customer account data,
+          demographics, and service subscriptions in the Telco dataset.
+        </p>
+        <a href="https://www.kaggle.com/datasets/marwanehosni/synthetic-telco-messy-dataset-churn-prediction"
+          target="_blank" rel="noopener" class="kaggle-link">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+            <path d="M18.825 23.859c-.022.092-.117.141-.281.141h-3.139c-.187 0-.351-.082-.492-.248l-5.178-6.589-1.448 1.374v5.111c0 .235-.117.352-.351.352H5.505c-.236 0-.354-.117-.354-.352V.353c0-.233.118-.353.354-.353h2.431c.234 0 .351.12.351.353v14.343l6.203-6.272c.165-.165.33-.246.495-.246h3.239c.144 0 .236.06.281.18.046.149.034.233-.036.315L12.56 14.89l6.35 8.652c.07.094.09.191.056.281z"/>
+          </svg>
+          View Dataset on Kaggle
+          <svg class="kaggle-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 10h10M11 5l5 5-5 5" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="data-grid">
+        <div class="data-card reveal-on-scroll">
+          <div class="data-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <h3 class="data-card-title">Customer Demographics</h3>
+          <p class="data-card-desc">Gender, senior citizen status, partner & dependent information</p>
+          <div class="data-card-tags">
+            <span class="data-tag">Gender</span>
+            <span class="data-tag">Age Group</span>
+            <span class="data-tag">Family</span>
+          </div>
+        </div>
+
+        <div class="data-card reveal-on-scroll">
+          <div class="data-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <rect x="2" y="3" width="20" height="14" rx="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
               <line x1="12" y1="17" x2="12" y2="21" />
             </svg>
-            Account Information
-          </legend>
-
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="tenure">
-                Tenure
-                <span class="form-hint">(months)</span>
-              </label>
-              <input class="form-input" type="number" id="tenure" name="tenure" min="0" max="72" placeholder="e.g. 24"
-                required />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="MonthlyCharges">
-                Monthly Charges
-                <span class="form-hint">($)</span>
-              </label>
-              <input class="form-input" type="number" id="MonthlyCharges" name="MonthlyCharges" min="0" max="200"
-                step="0.01" placeholder="e.g. 65.50" required />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="TotalCharges">
-                Total Charges
-                <span class="form-hint">($)</span>
-              </label>
-              <input class="form-input" type="number" id="TotalCharges" name="TotalCharges" min="0" step="0.01"
-                placeholder="e.g. 1570.00" required />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="Contract">Contract Type</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="Contract" name="Contract">
-                  <option value="Month-to-month">Month-to-month</option>
-                  <option value="One year">One Year</option>
-                  <option value="Two year">Two Year</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group form-group--wide">
-              <label class="form-label" for="PaymentMethod">Payment Method</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="PaymentMethod" name="PaymentMethod">
-                  <option value="Bank transfer">Bank Transfer (auto)</option>
-                  <option value="Credit card">Credit Card (auto)</option>
-                  <option value="Electronic check">Electronic Check</option>
-                  <option value="Mailed check">Mailed Check</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="PaperlessBilling">Paperless Billing</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="PaperlessBilling" name="PaperlessBilling">
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-            </div>
           </div>
-        </fieldset>
-
-        <fieldset class="form-section">
-          <legend class="section-legend">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            Demographics
-          </legend>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="gender">Gender</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="gender" name="gender">
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="SeniorCitizen">Senior Citizen</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="SeniorCitizen" name="SeniorCitizen">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="Partner">Has Partner</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="Partner" name="Partner">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="Dependents">Has Dependents</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="Dependents" name="Dependents">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                </select>
-              </div>
-            </div>
+          <h3 class="data-card-title">Usage & Services</h3>
+          <p class="data-card-desc">Internet, phone, streaming, security, and backup service adoption</p>
+          <div class="data-card-tags">
+            <span class="data-tag">Internet</span>
+            <span class="data-tag">Phone</span>
+            <span class="data-tag">Streaming</span>
           </div>
-        </fieldset>
+        </div>
 
-        <fieldset class="form-section">
-          <legend class="section-legend">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12.55a11 11 0 0 1 14.08 0" />
-              <path d="M1.42 9a16 16 0 0 1 21.16 0" />
-              <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-              <circle cx="12" cy="20" r="1" />
+        <div class="data-card reveal-on-scroll">
+          <div class="data-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
-            Services Subscribed
-          </legend>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="PhoneService">Phone Service</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="PhoneService" name="PhoneService">
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="MultipleLines">Multiple Lines</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="MultipleLines" name="MultipleLines">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No phone service">No Phone Service</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="InternetService">Internet Service</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="InternetService" name="InternetService">
-                  <option value="DSL">DSL</option>
-                  <option value="Fiber optic">Fiber Optic</option>
-                  <option value="No">No Internet</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="OnlineSecurity">Online Security</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="OnlineSecurity" name="OnlineSecurity">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No Internet Service</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="OnlineBackup">Online Backup</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="OnlineBackup" name="OnlineBackup">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No Internet Service</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="DeviceProtection">Device Protection</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="DeviceProtection" name="DeviceProtection">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No Internet Service</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="TechSupport">Tech Support</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="TechSupport" name="TechSupport">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No Internet Service</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="StreamingTV">Streaming TV</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="StreamingTV" name="StreamingTV">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No Internet Service</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="StreamingMovies">Streaming Movies</label>
-              <div class="select-wrapper">
-                <select class="form-select" id="StreamingMovies" name="StreamingMovies">
-                  <option value="No">No</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No internet service">No Internet Service</option>
-                </select>
-              </div>
-            </div>
           </div>
-        </fieldset>
+          <h3 class="data-card-title">Contract & Billing</h3>
+          <p class="data-card-desc">Contract type, payment method, paperless billing preferences</p>
+          <div class="data-card-tags">
+            <span class="data-tag">Contract</span>
+            <span class="data-tag">Payment</span>
+            <span class="data-tag">Billing</span>
+          </div>
+        </div>
 
-        <button class="btn-predict" id="predictBtn" type="submit">
-          <span class="btn-text">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 8v4l3 3" />
+        <div class="data-card reveal-on-scroll">
+          <div class="data-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
-            Predict Churn Risk
-          </span>
-          <span class="btn-loader hidden">
-            <span class="spinner"></span>
-            Analysing…
-          </span>
-        </button>
+          </div>
+          <h3 class="data-card-title">Financial Data</h3>
+          <p class="data-card-desc">Monthly charges, total charges, and customer tenure duration</p>
+          <div class="data-card-tags">
+            <span class="data-tag">Tenure</span>
+            <span class="data-tag">Charges</span>
+            <span class="data-tag">Revenue</span>
+          </div>
+        </div>
 
-      </form>
-    </section>
+        <div class="data-card reveal-on-scroll">
+          <div class="data-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <h3 class="data-card-title">Support Interactions</h3>
+          <p class="data-card-desc">Tech support usage and online security/backup enrollment status</p>
+          <div class="data-card-tags">
+            <span class="data-tag">Tech Support</span>
+            <span class="data-tag">Security</span>
+            <span class="data-tag">Backup</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <aside class="panel panel--results" id="resultsPanel" aria-live="polite">
+  <!-- ═══════════════════ ML PIPELINE ═══════════════════ -->
+  <section class="section" id="pipeline">
+    <div class="section-inner">
+      <div class="section-header reveal-on-scroll">
+        <span class="section-tag">How It Works</span>
+        <h2 class="section-title">The ML Pipeline</h2>
+        <p class="section-desc">
+          From raw customer data to actionable prediction — here's how the system processes
+          information through four engineered stages.
+        </p>
+      </div>
 
-      <div class="empty-state" id="emptyState">
-        <div class="empty-icon">
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="40" cy="40" r="38" stroke="url(#g1)" stroke-width="2" />
-            <path d="M24 52 L40 28 L56 52" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round"
-              stroke-linejoin="round" />
-            <circle cx="40" cy="44" r="3" fill="url(#g1)" />
-            <defs>
-              <linearGradient id="g1" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#6366f1" />
-                <stop offset="1" stop-color="#8b5cf6" />
-              </linearGradient>
-            </defs>
+      <div class="pipeline-container reveal-on-scroll" id="pipelineContainer">
+        <div class="pipeline-track">
+
+          <!-- Node 1 -->
+          <div class="pipeline-node" data-step="0">
+            <div class="node-ring">
+              <div class="node-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                </svg>
+              </div>
+            </div>
+            <span class="node-label">Data Collection</span>
+            <span class="node-detail">Raw customer records</span>
+          </div>
+
+          <!-- Connector 1→2 -->
+          <div class="pipeline-connector" data-after="0">
+            <svg viewBox="0 0 100 4" preserveAspectRatio="none">
+              <line x1="0" y1="2" x2="100" y2="2" class="connector-bg" />
+              <line x1="0" y1="2" x2="100" y2="2" class="connector-signal" />
+            </svg>
+          </div>
+
+          <!-- Node 2 -->
+          <div class="pipeline-node" data-step="1">
+            <div class="node-ring">
+              <div class="node-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+              </div>
+            </div>
+            <span class="node-label">Feature Engineering</span>
+            <span class="node-detail">28 encoded features</span>
+          </div>
+
+          <!-- Connector 2→3 -->
+          <div class="pipeline-connector" data-after="1">
+            <svg viewBox="0 0 100 4" preserveAspectRatio="none">
+              <line x1="0" y1="2" x2="100" y2="2" class="connector-bg" />
+              <line x1="0" y1="2" x2="100" y2="2" class="connector-signal" />
+            </svg>
+          </div>
+
+          <!-- Node 3 -->
+          <div class="pipeline-node" data-step="2">
+            <div class="node-ring">
+              <div class="node-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+            </div>
+            <span class="node-label">Model Training</span>
+            <span class="node-detail">Logistic Regression + L1</span>
+          </div>
+
+          <!-- Connector 3→4 -->
+          <div class="pipeline-connector" data-after="2">
+            <svg viewBox="0 0 100 4" preserveAspectRatio="none">
+              <line x1="0" y1="2" x2="100" y2="2" class="connector-bg" />
+              <line x1="0" y1="2" x2="100" y2="2" class="connector-signal" />
+            </svg>
+          </div>
+
+          <!-- Node 4 -->
+          <div class="pipeline-node" data-step="3">
+            <div class="node-ring">
+              <div class="node-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <path d="M22 4 12 14.01l-3-3" />
+                </svg>
+              </div>
+            </div>
+            <span class="node-label">Prediction Output</span>
+            <span class="node-detail">Churn probability + risk</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ FINAL CTA ═══════════════════ -->
+  <section class="section section--cta" id="final-cta">
+    <div class="section-inner">
+      <div class="cta-block reveal-on-scroll">
+        <h2 class="cta-title">Ready to Predict Customer Churn?</h2>
+        <p class="cta-desc">
+          Enter customer data and get an instant risk assessment with actionable retention recommendations.
+        </p>
+        <a href="/predict" class="btn-primary btn-primary--lg">
+          <span class="btn-label">Start Prediction</span>
+          <svg class="btn-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 10h12M12 5l5 5-5 5" />
           </svg>
-        </div>
-        <h2 class="empty-title">Ready to Predict</h2>
-        <p class="empty-body">Fill in the customer profile on the left and click <strong>Predict Churn Risk</strong> to
-          see the AI analysis here.</p>
-        <div class="feature-pills">
-          <span class="pill">Churn Probability</span>
-          <span class="pill">Risk Level</span>
-          <span class="pill">Action Plan</span>
-        </div>
+        </a>
       </div>
+    </div>
+  </section>
 
-      <div class="result-content hidden" id="resultContent">
-
-        <div class="result-header" id="resultHeader">
-          <div class="risk-badge" id="riskBadge">
-            <div class="risk-icon" id="riskIcon"></div>
-            <div class="risk-text">
-              <span class="risk-label" id="riskLabel">HIGH RISK</span>
-              <span class="risk-sub" id="riskSub">Customer will likely churn</span>
-            </div>
-          </div>
-          <button class="btn-reset" id="resetBtn" title="Reset">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-            </svg>
-          </button>
-        </div>
-
-        <div class="gauge-card">
-          <div class="gauge-header">
-            <span class="gauge-title">Churn Probability</span>
-            <span class="gauge-pct" id="gaugePct">0%</span>
-          </div>
-          <div class="gauge-track">
-            <div class="gauge-fill" id="gaugeFill" style="width:0%"></div>
-          </div>
-          <div class="gauge-labels">
-            <span>Low Risk</span>
-            <span>High Risk</span>
-          </div>
-        </div>
-
-        <div class="prob-split">
-          <div class="prob-item prob-item--stay">
-            <div class="prob-circle" id="stayCircle">
-              <svg viewBox="0 0 36 36">
-                <path class="circle-bg" d="M18 2 a16 16 0 1 1 0 32 a16 16 0 1 1 0-32" />
-                <path class="circle-fill circle-fill--stay" id="stayPath" d="M18 2 a16 16 0 1 1 0 32 a16 16 0 1 1 0-32"
-                  stroke-dasharray="0 100" stroke-dashoffset="25" />
-              </svg>
-              <span class="prob-num" id="stayPct">0%</span>
-            </div>
-            <span class="prob-name">Will Stay</span>
-          </div>
-          <div class="prob-item prob-item--churn">
-            <div class="prob-circle" id="churnCircle">
-              <svg viewBox="0 0 36 36">
-                <path class="circle-bg" d="M18 2 a16 16 0 1 1 0 32 a16 16 0 1 1 0-32" />
-                <path class="circle-fill circle-fill--churn" id="churnPath"
-                  d="M18 2 a16 16 0 1 1 0 32 a16 16 0 1 1 0-32" stroke-dasharray="0 100" stroke-dashoffset="25" />
-              </svg>
-              <span class="prob-num" id="churnPct">0%</span>
-            </div>
-            <span class="prob-name">Will Churn</span>
-          </div>
-        </div>
-
-        <div class="rec-card" id="recCard">
-          <div class="rec-header">
-            <div class="rec-dot" id="recDot"></div>
-            <span class="rec-title" id="recTitle">Recommendation</span>
-          </div>
-          <p class="rec-message" id="recMessage"></p>
-          <ul class="rec-actions" id="recActions"></ul>
-        </div>
-
-      </div>
-    </aside>
-  </main>
-
+  <!-- ═══════════════════ FOOTER ═══════════════════ -->
   <footer class="site-footer">
-    <span>ChurnSight &copy; 2025 &mdash; Telco Churn Prediction Dashboard</span>
-    <div class="footer-links">
-      <a class="footer-link" href="https://mayanksaini-eight.vercel.app/" target="_blank" rel="noopener" title="Portfolio">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-        Portfolio
-      </a>
-      <span class="footer-sep">|</span>
-      <a class="footer-link" href="https://www.linkedin.com/in/mayank-saini-6666b4375/" target="_blank" rel="noopener" title="LinkedIn">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
-          <circle cx="4" cy="4" r="2"/>
-        </svg>
-        LinkedIn
-      </a>
+    <div class="footer-inner">
+      <span class="footer-copy">ChurnSight &copy; 2025 &mdash; ML-Powered Churn Prediction</span>
+      <div class="footer-links">
+        <a class="footer-link" href="https://mayanksaini-eight.vercel.app/" target="_blank" rel="noopener"
+          title="Portfolio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path
+              d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          Portfolio
+        </a>
+        <span class="footer-sep">|</span>
+        <a class="footer-link" href="https://www.linkedin.com/in/mayank-saini-6666b4375/" target="_blank" rel="noopener"
+          title="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+          LinkedIn
+        </a>
+      </div>
     </div>
   </footer>
 
